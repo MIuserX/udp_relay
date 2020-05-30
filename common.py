@@ -171,10 +171,8 @@ class ServTunnel:
 
     def __init__(self, local_ip, local_port_range, dst_ip, dst_port, timeout):
         self.local_ip = local_ip
-        self.local_port = local_port_range[0]
-
+        self.local_port = 0
         self.local_port_range = local_port_range
-        self.port_offset = 0
 
         self.dst_ip = dst_ip
         self.dst_port = dst_port
@@ -194,9 +192,7 @@ class ServTunnel:
                 self.sock.bind((self.local_ip, self.local_port))
                 break
             except Exception as e:
-                if retry <= ServTunnel.retry_max:
-                    print("Warning: bind port error - " + str(e))
-                else:
+                if retry > ServTunnel.retry_max:
                     raise Exception("bind port error ~ " + str(e))
                 retry += 1
 
