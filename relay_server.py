@@ -93,6 +93,7 @@ class RelayServer:
                 dst_port = getAPort(self.reply_addrs[reply_i]['port_range'])
                 tunnel = ServTunnel(addr['ip'], addr['port_range'], dst_ip, dst_port, self.tunnel_timeout)
                 self.tunnels.append(tunnel)
+                Logger.info("tunnel target is " + dst_ip + ':' + str(dst_port))
                 reply_i = (reply_i + 1) % len(self.reply_addrs)
             Logger.debug("create tunnels OK")
         except Exception as e:
@@ -129,7 +130,9 @@ class RelayServer:
             if not t:
                 t = self.__getATun()
             #Logger.debug("sentToTunnel: dst_ip=" + t.dst_ip + " dst_port=" + str(t.dst_port))
-            t.sock.sendto( pkt.payload(), (t.dst_ip, t.dst_port) )
+            payload = pkt.payload()
+            t.sock.sendto( payload, (t.dst_ip, t.dst_port) )
+            t.sent_bytes += len(payload)
         except Exception as e:
             raise Exception("sendToTunnel failed, {0}".format(str(e)))
 
@@ -223,6 +226,7 @@ class RelayServer:
                     tun_key = t.local_ip + ':' + str(t.local_port) +\
                         '<=>' + t.dst_ip + ':' + str(t.dst_port)
                     Logger.debug("expired tunnel [" + tun_key + "]")
+                    Logger.info("expired tunnel [" + tun_key + "] sent=" + str(t.sent_bytes))
 
                     dst_ip = self.reply_addrs[0]['ip']
                     dst_port = getAPort(self.reply_addrs[0]['port_range'])

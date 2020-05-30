@@ -179,6 +179,8 @@ class ServTunnel:
 
         self.timeout = timeout
 
+        self.sent_bytes = 0
+
         self.__newSock()
 
     def __newSock(self):
