@@ -231,11 +231,16 @@ class RelayServer:
                     del self.sessions[session_key]
 
 
-if __name__ == '__main__':
+def main():
     # listen_addr, listen_port : relay_server UDP listen
     # remote_dddr, remote_port :
     # reply_addr, reply_port_range : 
-    # 
+    #
+
+    daemonize() 
+
+    Logger.info("relay_server daemon started")
+ 
     conf = {
         "listen_addr": "0.0.0.0",
         "listen_port": 30002,
@@ -268,3 +273,7 @@ if __name__ == '__main__':
         server.loop()
     except Exception as e:
         print("Error: {}".format(str(e)))
+
+
+if __name__ == '__main__':
+    main()

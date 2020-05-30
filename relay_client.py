@@ -223,7 +223,11 @@ class RelayClient:
                     Logger.info('session['+session_key+'] expired')
 
 
-if __name__ == '__main__':
+def main():
+    daemonize()
+
+    Logger.info("relay_client daemon started")
+
     conf = {
         "listen_addr": "0.0.0.0",
         "listen_port": 30001,
@@ -250,3 +254,7 @@ if __name__ == '__main__':
         cli.loop()
     except Exception as e:
         Logger.error(str(e))
+
+
+if __name__ == '__main__':
+    main()
