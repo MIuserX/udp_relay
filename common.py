@@ -179,8 +179,6 @@ class ServTunnel:
 
         self.timeout = timeout
 
-        self.sent_bytes = 0
-
         self.__newSock()
 
     def __newSock(self):
@@ -201,6 +199,7 @@ class ServTunnel:
         self.sock.setblocking(False)
 
         self.birth_time = time.time()
+        self.sent_bytes = 0
 
     def refresh(self, dst_ip, dst_port):
         self.dst_ip = dst_ip
