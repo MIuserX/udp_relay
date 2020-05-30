@@ -72,11 +72,14 @@ class RelayServer:
         except Exception as e:
             raise Exception("args error ~ {0}".format(str(e)))
 
+        Logger.debug("args OK")
+
         try:
             self.listen_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.listen_sock.bind((self.listen_addr, self.listen_port))
             self.listen_sock.setblocking(False)
             self.r_socks.append(self.listen_sock)
+            Logger.debug("UDP listen OK")
         except Exception as e:
             if len(self.r_socks) > 0:
                 for s in self.r_socks:
@@ -89,6 +92,7 @@ class RelayServer:
                 dst_port = getAPort(self.reply_addrs[0]['port_range'])
                 tunnel = ServTunnel(addr['ip'], addr['port_range'], dst_ip, dst_port, self.tunnel_timeout)
                 self.tunnels.append(tunnel)
+            Logger.debug("create tunnels OK")
         except Exception as e:
             if len(self.r_socks) > 0:
                 for s in self.r_socks:
@@ -239,7 +243,7 @@ def main():
 
     daemonize() 
 
-    Logger.info("relay_server daemon started")
+    Logger.info("daemon ok")
  
     conf = {
         "listen_addr": "0.0.0.0",
