@@ -65,6 +65,7 @@ class RelayServer:
 
             self.local_addrs = conf["local_addrs"]
             self.reply_addrs = conf["reply_addrs"]
+            self.reply_i = 0
             self.tunnels = []  # tunnel
             self.tun_i = 0
 
@@ -87,14 +88,13 @@ class RelayServer:
             raise Exception("UDP listen error ~ {0}".format(str(e)))
 
         try:
-            reply_i = 0
             for addr in self.local_addrs:
-                dst_ip = self.reply_addrs[reply_i]['ip']
-                dst_port = getAPort(self.reply_addrs[reply_i]['port_range'])
+                dst_ip = self.reply_addrs[self.reply_i]['ip']
+                dst_port = getAPort(self.reply_addrs[self.reply_i]['port_range'])
                 tunnel = ServTunnel(addr['ip'], addr['port_range'], dst_ip, dst_port, self.tunnel_timeout)
                 self.tunnels.append(tunnel)
                 Logger.info("tunnel target is " + dst_ip + ':' + str(dst_port))
-                reply_i = (reply_i + 1) % len(self.reply_addrs)
+                self.reply_i = (self.reply_i + 1) % len(self.reply_addrs)
             Logger.debug("create tunnels OK")
         except Exception as e:
             if len(self.r_socks) > 0:
@@ -228,8 +228,9 @@ class RelayServer:
                     Logger.debug("expired tunnel [" + tun_key + "]")
                     Logger.info("expired tunnel [" + tun_key + "] sent=" + str(t.sent_bytes))
 
-                    dst_ip = self.reply_addrs[0]['ip']
-                    dst_port = getAPort(self.reply_addrs[0]['port_range'])
+                    dst_ip = self.reply_addrs[self.reply_i]['ip']
+                    dst_port = getAPort(self.reply_addrs[self.reply_i]['port_range'])
+                    self.reply_i = (self.reply_i + 1) % len(self.reply_addrs)
 
                     t.refresh(dst_ip, dst_port)
 
